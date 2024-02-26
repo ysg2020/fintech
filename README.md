@@ -17,5 +17,5 @@
   - 내 계좌 별로 보유하고 있는 잔액과 거래내역을 조회 할 수 있습니다
 ---
 ## ERD 설계
-![fintechERD](https://github.com/ysg2020/fintech/assets/70841944/fd811788-6a6d-46ce-8126-391ce0ab4388)
+![fintechERD](https://github.com/ysg2020/fintech/assets/70841944/70e38797-9aff-4567-9c24-4db44f2ee9a5)
 
