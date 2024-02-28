@@ -35,6 +35,7 @@
   - 회원 가입시 입력한 정보를 조회,수정 할 수 있고 탈퇴 할 수 있습니다
 ---
 ## ERD 설계
-![fintechERD](https://github.com/ysg2020/fintech/assets/70841944/9a0331dc-c7b5-46da-a864-26a0bd95eb72)
+![fintechERD](https://github.com/ysg2020/fintech/assets/70841944/3be0cc5b-6377-4578-8e03-ccd4ed7a4b44)
+
 
 
