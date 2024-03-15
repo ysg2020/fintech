@@ -33,22 +33,5 @@ public class AccountDto {
                 .balance(accountEntity.getBalance())
                 .build();
     }
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public class DropAccountDto{
-        private int accountIdx;             // 계좌 고유번호
-        private LocalDate dropDate;         // 계좌 해지일
 
-    }
-
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public class UpdateAccountDto{
-        private int accountIdx;             // 계좌 고유번호
-        private int balance;                // 계좌 잔액
-
-    }
 }

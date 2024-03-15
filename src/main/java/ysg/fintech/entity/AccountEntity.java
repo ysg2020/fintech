@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ysg.fintech.dto.AccountDto;
+import ysg.fintech.exception.impl.FintechException;
+import ysg.fintech.type.ErrorCode;
 
 import java.time.LocalDate;
 
@@ -51,15 +53,15 @@ public class AccountEntity {
     }
 
     // 계좌 해지 설정
-    public void dropAccount(AccountDto.DropAccountDto dropAccountDto){
+    public void dropAccount(AccountDto accountDto){
         this.accStat = "UNREGISTERED";
-        this.dropDate = dropAccountDto.getDropDate();
+        this.dropDate = accountDto.getDropDate();
     }
 
     // 입금
     public void deposit(int amount){
         if(amount < 0){
-            //throw new AccountException(ErrorCode.INVALID_REQUEST);
+            throw new FintechException(ErrorCode.INVALID_DEPOSIT);
         }
         balance += amount;
     }
@@ -67,7 +69,7 @@ public class AccountEntity {
     // 출금
     public void withdrawal(int amount){
         if(amount > balance){
-            throw new RuntimeException();
+            throw new FintechException(ErrorCode.NOT_ENOUGH_BALANCE);
         }
         balance -= amount;
     }

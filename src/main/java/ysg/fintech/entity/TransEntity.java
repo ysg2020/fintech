@@ -42,6 +42,8 @@ public class TransEntity {
     @Column(name = "trans_target")
     private String transTarget;         // 거래 대상자명
 
+    @Column(name = "trans_target_acc_num")
+    private String transTargetAccNum;         // 거래 대상자 계좌번호
     public static TransEntity fromDto(TransDto transDto){
         return TransEntity.builder()
                 .transIdx(transDto.getTransIdx())
@@ -52,6 +54,7 @@ public class TransEntity {
                 .amount(transDto.getAmount())
                 .transDate(transDto.getTransDate())
                 .transTarget(transDto.getTransTarget())
+                .transTargetAccNum(transDto.getTransTargetAccNum())
                 .build();
     }
 }

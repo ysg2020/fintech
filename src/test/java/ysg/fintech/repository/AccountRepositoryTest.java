@@ -48,9 +48,14 @@ public class AccountRepositoryTest {
     void 계좌해지() {
         //given
         AccountEntity unregisteredAccount = AccountEntity.builder()
+                .accountIdx(1)
+                .memberIdx(MemberEntity.builder()
+                        .memberIdx(1)
+                        .build())
                 .accNum("012345-01-012345")
                 .accStat("UNREGISTERED")
                 .createDate(LocalDate.now())
+                .dropDate(LocalDate.now())
                 .balance(0)
                 .build();
         //when
