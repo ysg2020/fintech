@@ -10,6 +10,7 @@ import org.springframework.test.annotation.Rollback;
 import ysg.fintech.Repository.AccountRepository;
 import ysg.fintech.entity.AccountEntity;
 import ysg.fintech.entity.MemberEntity;
+import ysg.fintech.type.AccountStatus;
 
 import java.time.LocalDate;
 
@@ -30,7 +31,7 @@ public class AccountRepositoryTest {
                         .memberIdx(1)
                         .build())
                 .accNum("012345-01-012345")
-                .accStat("IN_USE")
+                .accStat(AccountStatus.IN_USE)
                 .createDate(LocalDate.now())
                 .balance(0)
                 .build();
@@ -48,9 +49,14 @@ public class AccountRepositoryTest {
     void 계좌해지() {
         //given
         AccountEntity unregisteredAccount = AccountEntity.builder()
+                .accountIdx(1)
+                .memberIdx(MemberEntity.builder()
+                        .memberIdx(1)
+                        .build())
                 .accNum("012345-01-012345")
-                .accStat("UNREGISTERED")
+                .accStat(AccountStatus.UNREGISTERED)
                 .createDate(LocalDate.now())
+                .dropDate(LocalDate.now())
                 .balance(0)
                 .build();
         //when

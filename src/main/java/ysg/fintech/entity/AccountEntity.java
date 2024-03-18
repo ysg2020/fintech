@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ysg.fintech.dto.AccountDto;
+import ysg.fintech.exception.impl.FintechException;
+import ysg.fintech.type.AccountStatus;
+import ysg.fintech.type.ErrorCode;
 
 import java.time.LocalDate;
 
@@ -28,7 +31,8 @@ public class AccountEntity {
     private String accNum;                  // 계좌 번호
 
     @Column(name = "acc_stat")
-    private String accStat;                 // 계좌 상태
+    @Enumerated(EnumType.STRING)
+    private AccountStatus accStat;          // 계좌 상태
 
     @Column(name = "create_date")
     private LocalDate createDate;           // 계좌 개설일
@@ -51,15 +55,15 @@ public class AccountEntity {
     }
 
     // 계좌 해지 설정
-    public void dropAccount(AccountDto.DropAccountDto dropAccountDto){
-        this.accStat = "UNREGISTERED";
-        this.dropDate = dropAccountDto.getDropDate();
+    public void dropAccount(AccountDto accountDto){
+        this.accStat = AccountStatus.UNREGISTERED;
+        this.dropDate = accountDto.getDropDate();
     }
 
     // 입금
     public void deposit(int amount){
         if(amount < 0){
-            //throw new AccountException(ErrorCode.INVALID_REQUEST);
+            throw new FintechException(ErrorCode.INVALID_DEPOSIT);
         }
         balance += amount;
     }
@@ -67,7 +71,7 @@ public class AccountEntity {
     // 출금
     public void withdrawal(int amount){
         if(amount > balance){
-            throw new RuntimeException();
+            throw new FintechException(ErrorCode.NOT_ENOUGH_BALANCE);
         }
         balance -= amount;
     }

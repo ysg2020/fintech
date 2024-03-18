@@ -11,6 +11,7 @@ import ysg.fintech.Repository.TransRepository;
 import ysg.fintech.entity.AccountEntity;
 import ysg.fintech.entity.MemberEntity;
 import ysg.fintech.entity.TransEntity;
+import ysg.fintech.type.TransType;
 
 import java.time.LocalDateTime;
 
@@ -33,8 +34,8 @@ public class TransRepositoryTest {
                 .memberIdx(MemberEntity.builder()
                         .memberIdx(1)
                         .build())
-                .transType("S")
-                .transStat("입금")
+                .transType(TransType.DEPOSIT)
+                .transStat("S")
                 .amount(1000)
                 .transDate(LocalDateTime.now())
                 .build();
