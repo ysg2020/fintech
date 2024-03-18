@@ -16,6 +16,7 @@ import ysg.fintech.dto.MemberDto;
 import ysg.fintech.entity.AccountEntity;
 import ysg.fintech.entity.MemberEntity;
 import ysg.fintech.exception.impl.FintechException;
+import ysg.fintech.type.AccountStatus;
 import ysg.fintech.type.ErrorCode;
 
 import java.time.LocalDate;
@@ -48,7 +49,7 @@ public class AccountServiceTest {
             .accountIdx(1)
             .memberIdx(MemberEntity.fromDto(member))
             .accNum("012345-01-012345")
-            .accStat("IN_USE")
+            .accStat(AccountStatus.IN_USE)
             .createDate(LocalDate.now())
             .balance(20000)
             .build();
@@ -89,7 +90,7 @@ public class AccountServiceTest {
     void 계좌해지실패_이미해지된계좌() {
         //given
         // 계좌 해지상태로 설정
-        account.setAccStat("UNREGISTERED");
+        account.setAccStat(AccountStatus.UNREGISTERED);
         given(accountRepository.findById(any()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
         //when

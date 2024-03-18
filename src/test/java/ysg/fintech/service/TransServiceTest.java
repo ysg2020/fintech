@@ -18,7 +18,9 @@ import ysg.fintech.entity.AccountEntity;
 import ysg.fintech.entity.MemberEntity;
 import ysg.fintech.entity.TransEntity;
 import ysg.fintech.exception.impl.FintechException;
+import ysg.fintech.type.AccountStatus;
 import ysg.fintech.type.ErrorCode;
+import ysg.fintech.type.TransType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -55,7 +57,7 @@ public class TransServiceTest {
             .accountIdx(1)
             .memberIdx(MemberEntity.fromDto(member))
             .accNum("012345-01-012345")
-            .accStat("IN_USE")
+            .accStat(AccountStatus.IN_USE)
             .createDate(LocalDate.now())
             .balance(20000)
             .build();
@@ -71,7 +73,7 @@ public class TransServiceTest {
             .accountIdx(1)
             .memberIdx(MemberEntity.fromDto(member))
             .accNum("123456-02-123456")
-            .accStat("IN_USE")
+            .accStat(AccountStatus.IN_USE)
             .createDate(LocalDate.now())
             .balance(100000)
             .build();
@@ -79,7 +81,7 @@ public class TransServiceTest {
             .transIdx(1)
             .memberIdx(MemberEntity.fromDto(member))
             .accountIdx(AccountEntity.fromDto(account))
-            .transType("DEPOSIT")
+            .transType(TransType.DEPOSIT)
             .transStat("S")
             .amount(10000)
             .transDate(LocalDateTime.now())
@@ -105,7 +107,7 @@ public class TransServiceTest {
     void 거래실패_해지계좌() {
         //given
         // 해지계좌로 설정
-        account.setAccStat("UNREGISTERED");
+        account.setAccStat(AccountStatus.UNREGISTERED);
         // account 조회 모킹
         given(accountRepository.findById(any()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
@@ -143,7 +145,7 @@ public class TransServiceTest {
     void 출금요청성공() {
         //given
         // 거래 종류 출금으로 설정
-        trans.setTransType("WITHDRAWAL");
+        trans.setTransType(TransType.WITHDRAWAL);
         // 저장되기 전의 값을 찾기 위해 사용 (실제 검증)
         ArgumentCaptor<AccountEntity> captor = ArgumentCaptor.forClass(AccountEntity.class);
         // account 조회 모킹
@@ -168,7 +170,7 @@ public class TransServiceTest {
     void 출금요청실패_잔액부족() {
         //given
         // 거래 종류 출금으로 설정
-        trans.setTransType("WITHDRAWAL");
+        trans.setTransType(TransType.WITHDRAWAL);
         // 거래 금액을 5만원으로 설정
         trans.setAmount(50000);
         // account 조회 모킹
@@ -189,7 +191,7 @@ public class TransServiceTest {
     void 송금성공() {
         //given
         // 거래 종류 송금으로 설정
-        trans.setTransType("TRANS");
+        trans.setTransType(TransType.TRANS);
         // 저장되기 전의 값을 찾기 위해 사용 (실제 검증)
         ArgumentCaptor<AccountEntity> captor = ArgumentCaptor.forClass(AccountEntity.class);
         // account 조회 모킹
@@ -220,9 +222,9 @@ public class TransServiceTest {
     void 송금실패_해지계좌() {
         //given
         // 거래 종류 송금으로 설정
-        trans.setTransType("TRANS");
+        trans.setTransType(TransType.TRANS);
         // 계좌 상태를 해지 상태로 설정
-        targetAccount.setAccStat("UNREGISTERED");
+        targetAccount.setAccStat(AccountStatus.UNREGISTERED);
         // account 조회 모킹
         given(accountRepository.findById(any()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
@@ -242,7 +244,7 @@ public class TransServiceTest {
     void 송금실패_잘못된거래종류() {
         //given
         // 잘못된 거래 종류 설정
-        trans.setTransType("ex");
+        trans.setTransType(TransType.EX);
         // account 조회 모킹
         given(accountRepository.findById(any()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
@@ -260,7 +262,7 @@ public class TransServiceTest {
     void 송금실패_존재하지않는거래대상자의계좌() {
         //given
         // 거래 종류 송금으로 설정
-        trans.setTransType("TRANS");
+        trans.setTransType(TransType.TRANS);
         // account 조회 모킹
         given(accountRepository.findById(any()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));

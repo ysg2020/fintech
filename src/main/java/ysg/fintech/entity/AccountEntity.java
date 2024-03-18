@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ysg.fintech.dto.AccountDto;
 import ysg.fintech.exception.impl.FintechException;
+import ysg.fintech.type.AccountStatus;
 import ysg.fintech.type.ErrorCode;
 
 import java.time.LocalDate;
@@ -30,7 +31,8 @@ public class AccountEntity {
     private String accNum;                  // 계좌 번호
 
     @Column(name = "acc_stat")
-    private String accStat;                 // 계좌 상태
+    @Enumerated(EnumType.STRING)
+    private AccountStatus accStat;          // 계좌 상태
 
     @Column(name = "create_date")
     private LocalDate createDate;           // 계좌 개설일
@@ -54,7 +56,7 @@ public class AccountEntity {
 
     // 계좌 해지 설정
     public void dropAccount(AccountDto accountDto){
-        this.accStat = "UNREGISTERED";
+        this.accStat = AccountStatus.UNREGISTERED;
         this.dropDate = accountDto.getDropDate();
     }
 

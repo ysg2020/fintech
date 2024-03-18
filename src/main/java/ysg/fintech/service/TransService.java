@@ -13,7 +13,9 @@ import ysg.fintech.entity.AccountEntity;
 import ysg.fintech.entity.MemberEntity;
 import ysg.fintech.entity.TransEntity;
 import ysg.fintech.exception.impl.FintechException;
+import ysg.fintech.type.AccountStatus;
 import ysg.fintech.type.ErrorCode;
+import ysg.fintech.type.TransType;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,17 +41,17 @@ public class TransService {
         validateCreateTransaction(account);
         // 계좌 잔액 갱신 로직
         // 입금일경우
-        if(transDto.getTransType().equals("DEPOSIT")){
+        if(transDto.getTransType().equals(TransType.DEPOSIT)){
             log.info("DEPOSIT start!!");
             account.deposit(transDto.getAmount());
         }
         // 출금일경우
-        else if(transDto.getTransType().equals("WITHDRAWAL")){
+        else if(transDto.getTransType().equals(TransType.WITHDRAWAL)){
             log.info("WITHDRAWAL start!!");
             account.withdrawal(transDto.getAmount());
         }
         // 송금일경우
-        else if(transDto.getTransType().equals("TRANS")){
+        else if(transDto.getTransType().equals(TransType.TRANS)){
             log.info("TRANS start!!");
             AccountEntity targetAccount = accountRepository.findByAccNum(transDto.getTransTargetAccNum())
                     .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
@@ -85,7 +87,7 @@ public class TransService {
     // 거래 가능 여부 검증
     private void validateCreateTransaction(AccountEntity account){
         // 해지가 되어 있는 계좌일경우
-        if(account.getAccStat().equals("UNREGISTERED")){
+        if(account.getAccStat().equals(AccountStatus.UNREGISTERED)){
             throw new FintechException(ErrorCode.CAN_NOT_TRANS_UNREGISTERED_ACCOUNT);
         }
     }

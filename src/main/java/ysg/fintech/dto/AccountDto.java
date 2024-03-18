@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ysg.fintech.entity.AccountEntity;
 import ysg.fintech.entity.MemberEntity;
+import ysg.fintech.type.AccountStatus;
 
 import java.time.LocalDate;
 @Data
@@ -17,7 +18,7 @@ public class AccountDto {
     private int accountIdx;             // 계좌 고유번호
     private MemberEntity memberIdx;     // 회원 고유번호
     private String accNum;              // 계좌 번호
-    private String accStat;             // 계좌 상태
+    private AccountStatus accStat;             // 계좌 상태
     private LocalDate createDate;       // 계좌 개설일
     private LocalDate dropDate;         // 계좌 해지일
     private int balance;                // 계좌 잔액

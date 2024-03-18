@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import ysg.fintech.entity.AccountEntity;
 import ysg.fintech.entity.MemberEntity;
 import ysg.fintech.entity.TransEntity;
+import ysg.fintech.type.TransType;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +20,7 @@ public class TransDto {
     private int transIdx;                       // 거래 고유번호
     private AccountEntity accountIdx;           // 계좌 고유번호
     private MemberEntity memberIdx;             // 회원 고유번호
-    private String transType;                   // 거래 종류
+    private TransType transType;                // 거래 종류
     private String transStat;                   // 거래 상태
     private int amount;                         // 거래 금액
     private LocalDateTime transDate;            // 거래 일시

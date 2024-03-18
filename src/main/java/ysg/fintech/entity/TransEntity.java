@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ysg.fintech.dto.TransDto;
+import ysg.fintech.type.TransType;
 
 import java.time.LocalDateTime;
 
@@ -29,7 +30,8 @@ public class TransEntity {
     private MemberEntity memberIdx;     // 회원 고유번호
 
     @Column(name = "trans_type")
-    private String transType;           // 거래 종류
+    @Enumerated(EnumType.STRING)
+    private TransType transType;           // 거래 종류
 
     @Column(name = "trans_stat")
     private String transStat;           // 거래 상태

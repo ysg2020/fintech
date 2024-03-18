@@ -8,6 +8,7 @@ import ysg.fintech.dto.AccountDto;
 import ysg.fintech.entity.AccountEntity;
 import ysg.fintech.entity.MemberEntity;
 import ysg.fintech.exception.impl.FintechException;
+import ysg.fintech.type.AccountStatus;
 import ysg.fintech.type.ErrorCode;
 
 import java.util.List;
@@ -63,7 +64,7 @@ public class AccountService {
     // 계좌 해지 가능 여부 검증
     private void validateDropAccount(AccountEntity account){
         // 이미 해지가 되어 있는 계좌일경우
-        if(account.getAccStat().equals("UNREGISTERED")){
+        if(account.getAccStat().equals(AccountStatus.UNREGISTERED)){
             throw new FintechException(ErrorCode.ALREADY_UNREGISTERED_ACCOUNT);
         }
         // 계좌에 잔액이 남아있는경우
