@@ -20,6 +20,7 @@ import ysg.fintech.entity.TransEntity;
 import ysg.fintech.exception.impl.FintechException;
 import ysg.fintech.type.AccountStatus;
 import ysg.fintech.type.ErrorCode;
+import ysg.fintech.type.TransStatus;
 import ysg.fintech.type.TransType;
 
 import java.time.LocalDate;
@@ -82,7 +83,7 @@ public class TransServiceTest {
             .memberIdx(MemberEntity.fromDto(member))
             .accountIdx(AccountEntity.fromDto(account))
             .transType(TransType.DEPOSIT)
-            .transStat("S")
+            .transStat(TransStatus.SUCCESS)
             .amount(10000)
             .transDate(LocalDateTime.now())
             .build();
@@ -187,7 +188,7 @@ public class TransServiceTest {
     }
 
     @Test
-    @DisplayName("잔액이 2만원인 계좌에서 1만원 송금했으므로 총 1만원이어야하고 잔액이 10만원인 거래대상자의 계좌는 11만원이어야한다")
+    @DisplayName("1만원을 송금했으므로 각각 계좌에 1만원씩 입금 및 출금이 되어야한다")
     void 송금성공() {
         //given
         // 거래 종류 송금으로 설정
@@ -278,4 +279,144 @@ public class TransServiceTest {
 
     }
 
+    @Test
+    @DisplayName("입금을 취소하면 입금했던 금액만큼 출금")
+    void 입금취소성공() {
+        //given
+        // 저장되기 전의 값을 찾기 위해 사용 (실제 검증)
+        ArgumentCaptor<AccountEntity> captor = ArgumentCaptor.forClass(AccountEntity.class);
+        // account 조회 모킹
+        given(accountRepository.findById(any()))
+                .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
+        // trans 조회 모킹
+        given(transRepository.findById(any()))
+                .willReturn(Optional.ofNullable(TransEntity.fromDto(trans)));
+        // trans 저장 모킹
+        given(transRepository.save(any()))
+                .willReturn(TransEntity.fromDto(trans));
+        //when
+        transService.cancelTransaction(trans);
+        //then
+        // 저장 되기전 변경된 잔액 정보 확인 (입금되었는지 확인)
+        verify(accountRepository,times(1)).save(captor.capture());
+        // 잔액이 2만원인 계좌에 1만원을 입금취소했으므로 1만원을 예상
+        Assertions.assertEquals(captor.getValue().getBalance(),10000);
+
+    }
+
+    @Test
+    @DisplayName("출금을 취소하면 출금했던 금액만큼 입금")
+    void 출금취소성공() {
+        //given
+        // 거래 종류 출금으로 설정
+        trans.setTransType(TransType.WITHDRAWAL);
+        // 저장되기 전의 값을 찾기 위해 사용 (실제 검증)
+        ArgumentCaptor<AccountEntity> captor = ArgumentCaptor.forClass(AccountEntity.class);
+        // account 조회 모킹
+        given(accountRepository.findById(any()))
+                .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
+        // trans 조회 모킹
+        given(transRepository.findById(any()))
+                .willReturn(Optional.ofNullable(TransEntity.fromDto(trans)));
+        // trans 저장 모킹
+        given(transRepository.save(any()))
+                .willReturn(TransEntity.fromDto(trans));
+        //when
+        transService.cancelTransaction(trans);
+        //then
+        // 저장 되기전 변경된 잔액 정보 확인 (입금되었는지 확인)
+        verify(accountRepository,times(1)).save(captor.capture());
+        // 잔액이 2만원인 계좌에 1만원을 출금취소했으므로 3만원을 예상
+        Assertions.assertEquals(captor.getValue().getBalance(),30000);
+
+    }
+    @Test
+    @DisplayName("송금을 취소하면 송금했던 금액만큼 각각 계좌에 입금 및 출금")
+    void 송금취소성공() {
+        //given
+        // 거래 종류 송금으로 설정
+        trans.setTransType(TransType.TRANS);
+        // 저장되기 전의 값을 찾기 위해 사용 (실제 검증)
+        ArgumentCaptor<AccountEntity> captor = ArgumentCaptor.forClass(AccountEntity.class);
+        // account 조회 모킹
+        given(accountRepository.findById(any()))
+                .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
+        // trans 조회 모킹
+        given(transRepository.findById(any()))
+                .willReturn(Optional.ofNullable(TransEntity.fromDto(trans)));
+        // trans 저장 모킹
+        given(transRepository.save(any()))
+                .willReturn(TransEntity.fromDto(trans));
+        // targetAccount 조회 모킹
+        given(accountRepository.findByAccNum(any()))
+                .willReturn(Optional.ofNullable(AccountEntity.fromDto(targetAccount)));
+        //when
+        transService.cancelTransaction(trans);
+        //then
+        // 저장 되기전 변경된 잔액 정보 확인 (송금되었는지 확인)
+        verify(accountRepository,times(2)).save(captor.capture());
+        // 송금했던 금액은 1만원이고 거래대상자의 계좌 잔액은 10만원이므로 취소 이후 9만원임을 예상
+        // 송금 후 남아있는 계좌 잔액은 3만원임을 예상
+        List<AccountEntity> allValues = captor.getAllValues();
+        Assertions.assertEquals(allValues.get(0).getBalance(),90000);
+        Assertions.assertEquals(allValues.get(1).getBalance(),30000);
+
+    }
+
+
+    @Test
+    @DisplayName("거래가 존재하지않는 경우 거래취소 실패")
+    void 거래취소실패_존재하지않는거래() {
+        //given
+        given(transRepository.findById(any()))
+                .willReturn(Optional.empty());
+        //when
+        FintechException fintechException = Assertions.assertThrows(FintechException.class,
+                () -> transService.cancelTransaction(trans));
+        //then
+        // 존재하지않는 거래 예외가 발생함을 예상
+        Assertions.assertEquals(ErrorCode.NOT_FOUND_TRANS,fintechException.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("해당 거래가 이미 취소인 경우 거래취소 실패")
+    void 거래취소실패_이미취소인거래() {
+        //given
+        // 취소인 거래 설정
+        trans.setTransStat(TransStatus.CANCEL);
+        // account 조회 모킹
+        given(accountRepository.findById(any()))
+                .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
+        // trans 조회 모킹
+        given(transRepository.findById(any()))
+                .willReturn(Optional.ofNullable(TransEntity.fromDto(trans)));
+        //when
+        FintechException fintechException = Assertions.assertThrows(FintechException.class,
+                () -> transService.cancelTransaction(trans));
+        //then
+        // 거래취소기간 이후 예외가 발생함을 예상
+        Assertions.assertEquals(ErrorCode.ALREADY_CANCEL_TRANS,fintechException.getErrorCode());
+
+    }
+
+    @Test
+    @DisplayName("거래취소기간 이후인 경우 거래취소 실패")
+    void 거래취소실패_거래취소기간이후() {
+        //given
+        // 해당 거래일시로부터 6일이 지난 시간 설정
+        trans.setTransDate(LocalDateTime.now().minusDays(6));
+        // account 조회 모킹
+        given(accountRepository.findById(any()))
+                .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
+        // trans 조회 모킹
+        given(transRepository.findById(any()))
+                .willReturn(Optional.ofNullable(TransEntity.fromDto(trans)));
+        //when
+        FintechException fintechException = Assertions.assertThrows(FintechException.class,
+                () -> transService.cancelTransaction(trans));
+        //then
+        // 거래취소기간 이후 예외가 발생함을 예상
+        Assertions.assertEquals(ErrorCode.TOO_OLD_CANCEL,fintechException.getErrorCode());
+
+    }
 }
