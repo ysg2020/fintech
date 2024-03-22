@@ -35,43 +35,38 @@ public class TransService {
         log.info("[TransService] createTransaction start!!");
         // dto > entity 로 변환
         TransEntity trans = TransEntity.fromDto(transDto);
-        AccountEntity account = accountRepository.findById(transDto.getAccountIdx().getAccountIdx())
+        AccountEntity account = accountRepository.findById(trans.getAccountIdx().getAccountIdx())
                 .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
         // 거래 가능 여부 검증
         validateCreateTransaction(account);
         // 계좌 잔액 갱신 로직
         // 입금일경우
-        if(transDto.getTransType().equals(TransType.DEPOSIT)){
+        if(trans.getTransType().equals(TransType.DEPOSIT)){
             log.info("DEPOSIT start!!");
-            account.deposit(transDto.getAmount());
+            account.deposit(trans.getAmount());
         }
         // 출금일경우
-        else if(transDto.getTransType().equals(TransType.WITHDRAWAL)){
+        else if(trans.getTransType().equals(TransType.WITHDRAWAL)){
             log.info("WITHDRAWAL start!!");
-            account.withdrawal(transDto.getAmount());
+            account.withdrawal(trans.getAmount());
         }
         // 송금일경우
-        else if(transDto.getTransType().equals(TransType.TRANS)){
+        else if(trans.getTransType().equals(TransType.TRANS)){
             log.info("TRANS start!!");
-            AccountEntity targetAccount = accountRepository.findByAccNum(transDto.getTransTargetAccNum())
+            AccountEntity targetAccount = accountRepository.findByAccNum(trans.getTransTargetAccNum())
                     .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
             // 거래 가능 여부 검증
             validateCreateTransaction(targetAccount);
             // 내 계좌 출금
-            account.withdrawal(transDto.getAmount());
+            account.withdrawal(trans.getAmount());
             // 대상 계좌 입금
-            targetAccount.deposit(transDto.getAmount());
-            // 대상 계좌 변경된 잔액 정보 저장
-            accountRepository.save(targetAccount);
+            targetAccount.deposit(trans.getAmount());
         }
         // 잘못된 거래 종류일경우
         else{
             log.info("TransType error!");
             throw new FintechException(ErrorCode.INVALID_TRANS_TYPE);
         }
-        // 변경된 잔액 정보 저장
-        accountRepository.save(account);
-
         // entity > dto 로 변환 후 리턴
         return TransDto.fromEntity(transRepository.save(trans));
 
@@ -83,8 +78,7 @@ public class TransService {
         log.info("[TransService] cancelTransaction start!!");
         TransEntity trans = transRepository.findById(transDto.getTransIdx())
                 .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_TRANS));
-
-        AccountEntity account = accountRepository.findById(transDto.getAccountIdx().getAccountIdx())
+        AccountEntity account = accountRepository.findById(trans.getAccountIdx().getAccountIdx())
                 .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
         // 거래 가능 여부 검증
         validateCreateTransaction(account);
@@ -92,37 +86,32 @@ public class TransService {
         validateCancelTransaction(trans);
         // 계좌 잔액 갱신 로직
         // 입금일경우 출금
-        if(transDto.getTransType().equals(TransType.DEPOSIT)){
+        if(trans.getTransType().equals(TransType.DEPOSIT)){
             log.info("DEPOSIT start!!");
-            account.withdrawal(transDto.getAmount());
+            account.withdrawal(trans.getAmount());
         }
         // 출금일경우 입금
-        else if(transDto.getTransType().equals(TransType.WITHDRAWAL)){
+        else if(trans.getTransType().equals(TransType.WITHDRAWAL)){
             log.info("WITHDRAWAL start!!");
-            account.deposit(transDto.getAmount());
+            account.deposit(trans.getAmount());
         }
         // 송금일경우
-        else if(transDto.getTransType().equals(TransType.TRANS)){
+        else if(trans.getTransType().equals(TransType.TRANS)){
             log.info("TRANS start!!");
-            AccountEntity targetAccount = accountRepository.findByAccNum(transDto.getTransTargetAccNum())
+            AccountEntity targetAccount = accountRepository.findByAccNum(trans.getTransTargetAccNum())
                     .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
             // 거래 가능 여부 검증
             validateCreateTransaction(targetAccount);
             // 내 계좌 입금
-            account.deposit(transDto.getAmount());
+            account.deposit(trans.getAmount());
             // 대상 계좌 출금
-            targetAccount.withdrawal(transDto.getAmount());
-            // 대상 계좌 변경된 잔액 정보 저장
-            accountRepository.save(targetAccount);
+            targetAccount.withdrawal(trans.getAmount());
         }
         // 잘못된 거래 종류일경우
         else{
             log.info("TransType error!");
             throw new FintechException(ErrorCode.INVALID_TRANS_TYPE);
         }
-        // 변경된 잔액 정보 저장
-        accountRepository.save(account);
-
         // 거래 취소 설정
         trans.cancelTrans();
         // entity > dto 로 변환 후 리턴
