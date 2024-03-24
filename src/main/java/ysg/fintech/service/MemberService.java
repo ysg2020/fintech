@@ -22,7 +22,7 @@ public class MemberService {
     }
 
     // 회원 탈퇴
-    public void signDown(MemberDto memberDto){
+    public void signOut(MemberDto memberDto){
         // dto > entity 로 변환
         MemberEntity member = MemberEntity.fromDto(memberDto);
 

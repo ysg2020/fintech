@@ -45,7 +45,9 @@ public class AccountEntity {
     public static AccountEntity fromDto(AccountDto accountDto){
         return AccountEntity.builder()
                 .accountIdx(accountDto.getAccountIdx())
-                .memberIdx(accountDto.getMemberIdx())
+                .memberIdx(MemberEntity.builder()
+                        .memberIdx(accountDto.getMemberIdx())
+                        .build())
                 .accNum(accountDto.getAccNum())
                 .accStat(accountDto.getAccStat())
                 .createDate(accountDto.getCreateDate())

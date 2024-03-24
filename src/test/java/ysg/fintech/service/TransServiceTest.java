@@ -35,8 +35,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class TransServiceTest {
-    @Mock
-    private MemberRepository memberRepository;
+
     @Mock
     private AccountRepository accountRepository;
     @Mock
@@ -46,33 +45,17 @@ public class TransServiceTest {
     private TransService transService;
 
     // 테스트 데이터
-    private MemberDto member = MemberDto.builder()
-            .memberIdx(1)
-            .userId("test12")
-            .userPwd("pwd12")
-            .name("테스터")
-            .gender("M")
-            .phone("010-1234-5678")
-            .build();
     private AccountDto account = AccountDto.builder()
             .accountIdx(1)
-            .memberIdx(MemberEntity.fromDto(member))
+            .memberIdx(1)
             .accNum("012345-01-012345")
             .accStat(AccountStatus.IN_USE)
             .createDate(LocalDate.now())
             .balance(20000)
             .build();
-    private MemberDto targetMember = MemberDto.builder()
-            .memberIdx(2)
-            .userId("test34")
-            .userPwd("pwd34")
-            .name("테스터2")
-            .gender("F")
-            .phone("010-4321-8765")
-            .build();
     private AccountDto targetAccount = AccountDto.builder()
             .accountIdx(1)
-            .memberIdx(MemberEntity.fromDto(member))
+            .memberIdx(1)
             .accNum("123456-02-123456")
             .accStat(AccountStatus.IN_USE)
             .createDate(LocalDate.now())
@@ -80,8 +63,8 @@ public class TransServiceTest {
             .build();
     private TransDto trans = TransDto.builder()
             .transIdx(1)
-            .memberIdx(MemberEntity.fromDto(member))
-            .accountIdx(AccountEntity.fromDto(account))
+            .memberIdx(1)
+            .accountIdx(1)
             .transType(TransType.DEPOSIT)
             .transStat(TransStatus.SUCCESS)
             .amount(10000)
