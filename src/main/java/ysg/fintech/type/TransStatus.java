@@ -7,7 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum TransStatus {
     SUCCESS("거래 성공"),
-    FAIL("거래 실패"),
     CANCEL("거래 취소");
 
     private String message;
