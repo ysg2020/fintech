@@ -37,17 +37,9 @@ public class AccountServiceTest {
     private AccountService accountService;
 
     // 테스트 데이터
-    private MemberDto member = MemberDto.builder()
-            .memberIdx(1)
-            .userId("test12")
-            .userPwd("pwd12")
-            .name("테스터")
-            .gender("M")
-            .phone("010-1234-5678")
-            .build();
     private AccountDto account = AccountDto.builder()
             .accountIdx(1)
-            .memberIdx(MemberEntity.fromDto(member))
+            .memberIdx(1)
             .accNum("012345-01-012345")
             .accStat(AccountStatus.IN_USE)
             .createDate(LocalDate.now())

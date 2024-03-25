@@ -120,8 +120,10 @@ public class TransService {
     }
 
     // 거래내역 조회
-    public List<TransDto> readTrans(TransDto transDto){
-        return transRepository.findByAccountIdx(transDto.getAccountIdx()).stream()
+    public List<TransDto> readTrans(int accountIdx){
+        return transRepository.findByAccountIdx(AccountEntity.builder()
+                        .accountIdx(accountIdx)
+                        .build()).stream()
                 .map(TransDto::fromEntity)
                 .collect(Collectors.toList());
     }

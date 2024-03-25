@@ -1,6 +1,7 @@
 package ysg.fintech.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ysg.fintech.Repository.AccountRepository;
 import ysg.fintech.Repository.MemberRepository;
@@ -14,7 +15,7 @@ import ysg.fintech.type.ErrorCode;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountService {
@@ -44,8 +45,11 @@ public class AccountService {
     }
 
     // 계좌 조회
-    public List<AccountDto> readAccount(AccountDto accountDto){
-        return accountRepository.findByMemberIdx(accountDto.getMemberIdx()).stream()
+    public List<AccountDto> readAccount(int memberIdx){
+        log.info("[Service] readAccount :{}",memberIdx);
+        return accountRepository.findByMemberIdx(MemberEntity.builder()
+                        .memberIdx(memberIdx)
+                        .build()).stream()
                 .map(AccountDto::fromEntity)
                 .collect(Collectors.toList());
     }
