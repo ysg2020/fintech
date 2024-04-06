@@ -4,21 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ysg.fintech.Repository.AccountRepository;
-import ysg.fintech.Repository.MemberRepository;
-import ysg.fintech.Repository.TransRepository;
-import ysg.fintech.dto.AccountDto;
+import ysg.fintech.repository.AccountRepository;
+import ysg.fintech.repository.TransRepository;
 import ysg.fintech.dto.TransDto;
 import ysg.fintech.entity.AccountEntity;
-import ysg.fintech.entity.MemberEntity;
 import ysg.fintech.entity.TransEntity;
 import ysg.fintech.exception.impl.FintechException;
 import ysg.fintech.type.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -41,17 +36,17 @@ public class TransService {
         validateCreateTransaction(account);
         // 계좌 잔액 갱신 로직
         // 입금일경우
-        if(trans.getTransType().equals(TransType.DEPOSIT)){
+        if (trans.getTransType().equals(TransType.DEPOSIT)) {
             log.info("DEPOSIT start!!");
             account.deposit(trans.getAmount());
         }
         // 출금일경우
-        else if(trans.getTransType().equals(TransType.WITHDRAWAL)){
+        else if (trans.getTransType().equals(TransType.WITHDRAWAL)) {
             log.info("WITHDRAWAL start!!");
             account.withdrawal(trans.getAmount());
         }
         // 송금일경우
-        else if(trans.getTransType().equals(TransType.TRANS)){
+        else if (trans.getTransType().equals(TransType.TRANS)) {
             log.info("TRANS start!!");
             AccountEntity targetAccount = accountRepository.findByAccNum(trans.getTransTargetAccNum())
                     .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
@@ -63,7 +58,7 @@ public class TransService {
             targetAccount.deposit(trans.getAmount());
         }
         // 잘못된 거래 종류일경우
-        else{
+        else {
             log.info("TransType error!");
             throw new FintechException(ErrorCode.INVALID_TRANS_TYPE);
         }
@@ -86,17 +81,17 @@ public class TransService {
         validateCancelTransaction(trans);
         // 계좌 잔액 갱신 로직
         // 입금일경우 출금
-        if(trans.getTransType().equals(TransType.DEPOSIT)){
+        if (trans.getTransType().equals(TransType.DEPOSIT)) {
             log.info("DEPOSIT start!!");
             account.withdrawal(trans.getAmount());
         }
         // 출금일경우 입금
-        else if(trans.getTransType().equals(TransType.WITHDRAWAL)){
+        else if (trans.getTransType().equals(TransType.WITHDRAWAL)) {
             log.info("WITHDRAWAL start!!");
             account.deposit(trans.getAmount());
         }
         // 송금일경우
-        else if(trans.getTransType().equals(TransType.TRANS)){
+        else if (trans.getTransType().equals(TransType.TRANS)) {
             log.info("TRANS start!!");
             AccountEntity targetAccount = accountRepository.findByAccNum(trans.getTransTargetAccNum())
                     .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
@@ -108,7 +103,7 @@ public class TransService {
             targetAccount.withdrawal(trans.getAmount());
         }
         // 잘못된 거래 종류일경우
-        else{
+        else {
             log.info("TransType error!");
             throw new FintechException(ErrorCode.INVALID_TRANS_TYPE);
         }
@@ -131,7 +126,7 @@ public class TransService {
     // 거래 가능 여부 검증
     private void validateCreateTransaction(AccountEntity account){
         // 해지가 되어 있는 계좌일경우
-        if(account.getAccStat().equals(AccountStatus.UNREGISTERED)){
+        if (account.getAccStat().equals(AccountStatus.UNREGISTERED)) {
             throw new FintechException(ErrorCode.CAN_NOT_TRANS_UNREGISTERED_ACCOUNT);
         }
     }
@@ -139,11 +134,11 @@ public class TransService {
     // 거래 취소 가능 여부 검증
     private void validateCancelTransaction(TransEntity trans){
         // 이미 취소한 거래인 경우
-        if(trans.getTransStat().equals(TransStatus.CANCEL)){
+        if (trans.getTransStat().equals(TransStatus.CANCEL)) {
             throw new FintechException(ErrorCode.ALREADY_CANCEL_TRANS);
         }
         // 거래일시로부터 특정기간이 지난 경우
-        if(trans.getTransDate().plusDays(FintechConstants.TERM).isBefore(LocalDateTime.now())){
+        if (trans.getTransDate().plusDays(FintechConstants.TERM).isBefore(LocalDateTime.now())) {
             throw new FintechException(ErrorCode.TOO_OLD_CANCEL);
         }
     }
