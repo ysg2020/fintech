@@ -2,7 +2,7 @@ package ysg.fintech.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ysg.fintech.Repository.MemberRepository;
+import ysg.fintech.repository.MemberRepository;
 import ysg.fintech.dto.MemberDto;
 import ysg.fintech.entity.MemberEntity;
 

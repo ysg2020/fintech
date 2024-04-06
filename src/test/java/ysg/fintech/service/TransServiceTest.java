@@ -4,18 +4,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ysg.fintech.Repository.AccountRepository;
-import ysg.fintech.Repository.MemberRepository;
-import ysg.fintech.Repository.TransRepository;
+import ysg.fintech.repository.AccountRepository;
+import ysg.fintech.repository.TransRepository;
 import ysg.fintech.dto.AccountDto;
-import ysg.fintech.dto.MemberDto;
 import ysg.fintech.dto.TransDto;
 import ysg.fintech.entity.AccountEntity;
-import ysg.fintech.entity.MemberEntity;
 import ysg.fintech.entity.TransEntity;
 import ysg.fintech.exception.impl.FintechException;
 import ysg.fintech.type.AccountStatus;
@@ -25,12 +21,10 @@ import ysg.fintech.type.TransType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)

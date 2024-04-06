@@ -1,4 +1,4 @@
-package ysg.fintech.Repository;
+package ysg.fintech.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ysg.fintech.entity.AccountEntity;
