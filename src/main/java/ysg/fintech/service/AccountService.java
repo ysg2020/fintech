@@ -42,14 +42,20 @@ public class AccountService {
         return AccountDto.fromEntity(accountRepository.save(account));
     }
 
-    // 계좌 조회
-    public List<AccountDto> readAccount(int memberIdx){
-        log.info("[Service] readAccount :{}",memberIdx);
+    // 계좌 목록 조회
+    public List<AccountDto> readAccountList(int memberIdx){
+        log.info("[Service] readAccountList :{}",memberIdx);
         return accountRepository.findByMemberIdx(MemberEntity.builder()
                         .memberIdx(memberIdx)
                         .build()).stream()
                 .map(AccountDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+    // 계좌 조회
+    public AccountDto readAccount(String accNum) {
+        log.info("[Service] readAccount :{}",accNum);
+        return AccountDto.fromEntity(accountRepository.findByAccNum(accNum)
+                .orElseThrow(() -> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT)));
     }
     // 계좌 개설 가능 여부 검증
     private void validateCreateAccount(AccountEntity account){
@@ -74,5 +80,6 @@ public class AccountService {
             throw new FintechException(ErrorCode.NOT_EMPTY_BALANCE);
         }
     }
+
 
 }

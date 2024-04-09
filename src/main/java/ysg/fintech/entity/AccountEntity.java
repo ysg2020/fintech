@@ -17,6 +17,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "account", indexes = @Index(name = "idx_acc_num",columnList = "acc_num"))
 public class AccountEntity {
     
     @Id
