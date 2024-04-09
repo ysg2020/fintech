@@ -16,11 +16,17 @@ public class AccountController {
 
     private final AccountService accountService;
 
+    // 계좌 목록 조회
+    @GetMapping("/list")
+    public List<AccountDto> readAccountList(@RequestParam(name = "memberIdx") int memberIdx){
+        log.info("[Controller] readAccountList : {}",memberIdx);
+        return accountService.readAccountList(memberIdx);
+    }
     // 계좌 조회
     @GetMapping
-    public List<AccountDto> readAccount(@RequestParam(name = "memberIdx") int memberIdx){
-        log.info("[Controller] readAccount : {}",memberIdx);
-        return accountService.readAccount(memberIdx);
+    public AccountDto readAccount(@RequestParam(name = "accNum") String accNum){
+        log.info("[Controller] readAccount : {}",accNum);
+        return accountService.readAccount(accNum);
     }
     // 계좌 개설
     @PostMapping
