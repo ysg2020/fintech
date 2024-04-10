@@ -30,7 +30,7 @@ public class TransService {
         log.info("[TransService] createTransaction start!!");
         // dto > entity 로 변환
         TransEntity trans = TransEntity.fromDto(transDto);
-        AccountEntity account = accountRepository.findById(trans.getAccountIdx().getAccountIdx())
+        AccountEntity account = accountRepository.findByIdWithLock(trans.getAccountIdx().getAccountIdx())
                 .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
         // 거래 가능 여부 검증
         validateCreateTransaction(account);
@@ -73,7 +73,7 @@ public class TransService {
         log.info("[TransService] cancelTransaction start!!");
         TransEntity trans = transRepository.findById(transDto.getTransIdx())
                 .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_TRANS));
-        AccountEntity account = accountRepository.findById(trans.getAccountIdx().getAccountIdx())
+        AccountEntity account = accountRepository.findByIdWithLock(trans.getAccountIdx().getAccountIdx())
                 .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
         // 거래 가능 여부 검증
         validateCreateTransaction(account);

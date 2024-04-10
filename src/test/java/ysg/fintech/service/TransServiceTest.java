@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -70,7 +71,7 @@ public class TransServiceTest {
     @DisplayName("계좌가 존재하지 않는경우 거래실패")
     void 거래실패_계좌X() {
         //given
-        given(accountRepository.findById(any()))
+        given(accountRepository.findByIdWithLock(anyInt()))
                 .willReturn(Optional.empty());
         //when
         FintechException fintechException = Assertions.assertThrows(FintechException.class,
@@ -87,7 +88,7 @@ public class TransServiceTest {
         // 해지계좌로 설정
         account.setAccStat(AccountStatus.UNREGISTERED);
         // account 조회 모킹
-        given(accountRepository.findById(any()))
+        given(accountRepository.findByIdWithLock(anyInt()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
         //when
         FintechException fintechException = Assertions.assertThrows(FintechException.class,
@@ -102,14 +103,14 @@ public class TransServiceTest {
     void 입금요청성공() {
         //given
         // account 조회 모킹
-        given(accountRepository.findById(any()))
+        given(accountRepository.findByIdWithLock(anyInt()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
         // trans 저장 모킹
         given(transRepository.save(any()))
                 .willReturn(TransEntity.fromDto(trans));
         //when
         transService.createTransaction(trans);
-        AccountEntity savedAccount = accountRepository.findById(any())
+        AccountEntity savedAccount = accountRepository.findByIdWithLock(anyInt())
                 .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
         //then
         // 잔액이 2만원인 계좌에 1만원을 입금했으므로 3만원을 예상
@@ -123,14 +124,14 @@ public class TransServiceTest {
         // 거래 종류 출금으로 설정
         trans.setTransType(TransType.WITHDRAWAL);
         // account 조회 모킹
-        given(accountRepository.findById(any()))
+        given(accountRepository.findByIdWithLock(anyInt()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
         // trans 저장 모킹
         given(transRepository.save(any()))
                 .willReturn(TransEntity.fromDto(trans));
         //when
         transService.createTransaction(trans);
-        AccountEntity savedAccount = accountRepository.findById(any())
+        AccountEntity savedAccount = accountRepository.findByIdWithLock(anyInt())
                 .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
         //then
         // 잔액이 2만원인 계좌에 1만원을 출금했으므로 1만원임을 예상
@@ -148,7 +149,7 @@ public class TransServiceTest {
         // 거래 금액을 5만원으로 설정
         trans.setAmount(50000);
         // account 조회 모킹
-        given(accountRepository.findById(any()))
+        given(accountRepository.findByIdWithLock(anyInt()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
         //when
         FintechException fintechException = Assertions.assertThrows(FintechException.class,
@@ -167,7 +168,7 @@ public class TransServiceTest {
         // 거래 종류 송금으로 설정
         trans.setTransType(TransType.TRANS);
         // account 조회 모킹
-        given(accountRepository.findById(any()))
+        given(accountRepository.findByIdWithLock(anyInt()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
         // trans 저장 모킹
         given(transRepository.save(any()))
@@ -177,7 +178,7 @@ public class TransServiceTest {
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(targetAccount)));
         //when
         transService.createTransaction(trans);
-        AccountEntity savedAccount = accountRepository.findById(any())
+        AccountEntity savedAccount = accountRepository.findByIdWithLock(anyInt())
                 .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
         AccountEntity savedTargetAccount = accountRepository.findByAccNum(any())
                 .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
@@ -199,7 +200,7 @@ public class TransServiceTest {
         // 계좌 상태를 해지 상태로 설정
         targetAccount.setAccStat(AccountStatus.UNREGISTERED);
         // account 조회 모킹
-        given(accountRepository.findById(any()))
+        given(accountRepository.findByIdWithLock(anyInt()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
         // targetAccount 조회 모킹
         given(accountRepository.findByAccNum(any()))
@@ -219,7 +220,7 @@ public class TransServiceTest {
         // 잘못된 거래 종류 설정
         trans.setTransType(TransType.EX);
         // account 조회 모킹
-        given(accountRepository.findById(any()))
+        given(accountRepository.findByIdWithLock(anyInt()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
         //when
         FintechException fintechException = Assertions.assertThrows(FintechException.class,
@@ -237,7 +238,7 @@ public class TransServiceTest {
         // 거래 종류 송금으로 설정
         trans.setTransType(TransType.TRANS);
         // account 조회 모킹
-        given(accountRepository.findById(any()))
+        given(accountRepository.findByIdWithLock(anyInt()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
         // 거래대상자의 계좌가 존재하지 않는경우
         given(accountRepository.findByAccNum(any()))
@@ -256,7 +257,7 @@ public class TransServiceTest {
     void 입금취소성공() {
         //given
         // account 조회 모킹
-        given(accountRepository.findById(any()))
+        given(accountRepository.findByIdWithLock(anyInt()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
         // trans 조회 모킹
         given(transRepository.findById(any()))
@@ -266,7 +267,7 @@ public class TransServiceTest {
                 .willReturn(TransEntity.fromDto(trans));
         //when
         transService.cancelTransaction(trans);
-        AccountEntity savedAccount = accountRepository.findById(any())
+        AccountEntity savedAccount = accountRepository.findByIdWithLock(anyInt())
                 .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
         //then
         // 잔액이 2만원인 계좌에 1만원을 입금취소했으므로 1만원을 예상
@@ -281,7 +282,7 @@ public class TransServiceTest {
         // 거래 종류 출금으로 설정
         trans.setTransType(TransType.WITHDRAWAL);
         // account 조회 모킹
-        given(accountRepository.findById(any()))
+        given(accountRepository.findByIdWithLock(anyInt()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
         // trans 조회 모킹
         given(transRepository.findById(any()))
@@ -291,7 +292,7 @@ public class TransServiceTest {
                 .willReturn(TransEntity.fromDto(trans));
         //when
         transService.cancelTransaction(trans);
-        AccountEntity savedAccount = accountRepository.findById(any())
+        AccountEntity savedAccount = accountRepository.findByIdWithLock(anyInt())
                 .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
         //then
         // 잔액이 2만원인 계좌에 1만원을 출금취소했으므로 3만원을 예상
@@ -305,7 +306,7 @@ public class TransServiceTest {
         // 거래 종류 송금으로 설정
         trans.setTransType(TransType.TRANS);
         // account 조회 모킹
-        given(accountRepository.findById(any()))
+        given(accountRepository.findByIdWithLock(anyInt()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
         // trans 조회 모킹
         given(transRepository.findById(any()))
@@ -318,7 +319,7 @@ public class TransServiceTest {
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(targetAccount)));
         //when
         transService.cancelTransaction(trans);
-        AccountEntity savedAccount = accountRepository.findById(any())
+        AccountEntity savedAccount = accountRepository.findByIdWithLock(anyInt())
                 .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
         AccountEntity savedTargetAccount = accountRepository.findByAccNum(any())
                 .orElseThrow(()-> new FintechException(ErrorCode.NOT_FOUND_ACCOUNT));
@@ -352,7 +353,7 @@ public class TransServiceTest {
         // 취소인 거래 설정
         trans.setTransStat(TransStatus.CANCEL);
         // account 조회 모킹
-        given(accountRepository.findById(any()))
+        given(accountRepository.findByIdWithLock(anyInt()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
         // trans 조회 모킹
         given(transRepository.findById(any()))
@@ -373,7 +374,7 @@ public class TransServiceTest {
         // 해당 거래일시로부터 6일이 지난 시간 설정
         trans.setTransDate(LocalDateTime.now().minusDays(6));
         // account 조회 모킹
-        given(accountRepository.findById(any()))
+        given(accountRepository.findByIdWithLock(anyInt()))
                 .willReturn(Optional.ofNullable(AccountEntity.fromDto(account)));
         // trans 조회 모킹
         given(transRepository.findById(any()))
